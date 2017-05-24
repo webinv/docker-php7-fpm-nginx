@@ -1,0 +1,39 @@
+server {
+    listen 80 default_server;
+
+    server_name _;
+
+    root /var/www;
+    index index.php;
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    location = /_healthcheck {
+        return 204;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    location ~ \.php(/|$) {
+        fastcgi_pass 127.0.0.1:9000;
+        fastcgi_index index.php;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+
+        fastcgi_param  SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        fastcgi_param  DOCUMENT_ROOT   $realpath_root;
+        fastcgi_param  REMOTE_ADDR     $http_x_real_ip if_not_empty;
+        fastcgi_param  HTTPS           $forwarded_proto_https;
+                
+        # extra fcgi php params
+        fastcgi_intercept_errors on;
+        fastcgi_read_timeout 300;
+        send_timeout 300;
+
+        expires epoch;
+    }
+}
