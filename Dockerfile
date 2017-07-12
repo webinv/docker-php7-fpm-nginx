@@ -30,9 +30,17 @@ RUN \
 # PHP extensions
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libpq-dev \
+        libbz2-dev \
         libzip-dev \
+        libcurl4-openssl-dev \
         libicu-dev \
+        libxslt-dev \
+        libtidy-dev \
+        libxml2-dev \
         libmcrypt-dev \
+        libmemcached-dev \
+        libssl-dev \
+        libsqlite3-dev \
         libfreetype6-dev \
         libjpeg62-turbo-dev \
         libpng12-dev \
@@ -42,20 +50,45 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         --with-jpeg-dir=/usr/include/ \
         --with-png-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install bcmath \
+    && docker-php-ext-install bz2 \
+    && docker-php-ext-install ctype \
+    && docker-php-ext-install curl \
+    && docker-php-ext-install dom \
+    && docker-php-ext-install exif \
+    && docker-php-ext-install fileinfo \
+    && docker-php-ext-install gettext \
+    && docker-php-ext-install hash \
+    && docker-php-ext-install iconv \
+    && docker-php-ext-install intl \
+    && docker-php-ext-install mbstring \
+    && docker-php-ext-install mcrypt \
+    && docker-php-ext-install mysqli \
+    && docker-php-ext-install opcache \
+    && docker-php-ext-install pcntl \
+    && docker-php-ext-install pgsql \
+    && docker-php-ext-install phar \
     && docker-php-ext-install pdo \
     && docker-php-ext-install pdo_mysql \
-    && docker-php-ext-install mysqli \
-    && docker-php-ext-install intl \
-    && docker-php-ext-install mcrypt \
-    && docker-php-ext-install iconv \
-    && docker-php-ext-install opcache \
-    && docker-php-ext-install bcmath \
+    && docker-php-ext-install pdo_pgsql \
+    && docker-php-ext-install pdo_sqlite \
+    && docker-php-ext-install soap \
+    && docker-php-ext-install sockets \
+    && docker-php-ext-install simplexml \
+    && docker-php-ext-install tidy \
+    && docker-php-ext-install xml \
+    && CFLAGS="-I/usr/src/php" docker-php-ext-install xmlreader \
+    && docker-php-ext-install xmlrpc \
+    && docker-php-ext-install xmlwriter \
+    && docker-php-ext-install xsl \
     && rm -rf /var/lib/apt/lists/*
 
 # PECL extensions
 RUN \
     pecl install zip-1.13.5 && \
-    docker-php-ext-enable zip
+    docker-php-ext-enable zip && \
+    pecl install mongodb && \
+    docker-php-ext-enable mongodb
 
 # PHP Tools
 RUN \
