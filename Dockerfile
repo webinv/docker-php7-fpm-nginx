@@ -6,8 +6,17 @@ LABEL maintainer "krzysztof@kardasz.eu"
 # Update system and install required packages
 ENV DEBIAN_FRONTEND noninteractive
 
+# App env
 ARG APP_ENV
 ENV APP_ENV ${APP_ENV:-prod}
+
+# NewRelic config
+ARG NEWRELIC_LICENSE
+ENV NEWRELIC_LICENSE ${NEWRELIC_LICENSE}
+ARG NEWRELIC_APPNAME
+ENV NEWRELIC_APPNAME ${NEWRELIC_APPNAME:-PHP Application}
+ARG NEWRELIC_ENABLED
+ENV NEWRELIC_ENABLED ${NEWRELIC_ENABLED:-false}
 
 # Common tools
 RUN \
@@ -97,6 +106,16 @@ RUN \
     wget -O /usr/local/bin/phpdoc http://phpdoc.org/phpDocumentor.phar && chmod +x /usr/local/bin/phpdoc && \
     wget -O /usr/local/bin/phpunit https://phar.phpunit.de/phpunit.phar && chmod +x /usr/local/bin/phpunit && \
     curl -LsS http://symfony.com/installer > /usr/local/bin/symfony && chmod a+x /usr/local/bin/symfony
+
+ # NewRelic
+ RUN \
+     echo 'deb http://apt.newrelic.com/debian/ newrelic non-free' | tee /etc/apt/sources.list.d/newrelic.list && \
+     wget -O- https://download.newrelic.com/548C16BF.gpg | apt-key add - && \
+     apt-get update && \
+     apt-get -y install newrelic-php5 && \
+     ln -s /usr/lib/newrelic-php5/agent/x64/newrelic-20160303.so /usr/local/lib/php/extensions/no-debug-non-zts-20160303/newrelic.so && \
+     cp /usr/lib/newrelic-php5/scripts/newrelic.ini.template /usr/local/etc/php/conf.d/newrelic.ini && \
+     sed -i "s/;newrelic.enabled = true/newrelic.enabled = false/g" /usr/local/etc/php/conf.d/newrelic.ini
 
 # Create directories
 RUN mkdir -p /etc/nginx/apps.d;
