@@ -67,7 +67,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && docker-php-ext-install opcache \
     && docker-php-ext-install pcntl \
     && docker-php-ext-install pgsql \
-    && docker-php-ext-install phar \
     && docker-php-ext-install pdo \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install pdo_pgsql \
